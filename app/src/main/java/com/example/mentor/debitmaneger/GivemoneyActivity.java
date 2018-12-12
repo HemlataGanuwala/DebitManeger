@@ -52,6 +52,10 @@ public class GivemoneyActivity extends FragmentActivity {
     private DatePickerDialog.OnDateSetListener dateSetListener;
     private DatePickerDialog.OnDateSetListener dateSetListenerdue;
     int year,month,day,yeardue,monthdue,daydue;
+    String image;
+    byte b;
+
+    boolean contactbool = false;
 
 
     @Override
@@ -73,6 +77,8 @@ public class GivemoneyActivity extends FragmentActivity {
         editTextdescription = (EditText) findViewById(R.id.etgivedes);
         imageViewcontact = (ImageView)findViewById(R.id.imgcontact);
         textViewcdate = (TextView)findViewById(R.id.tvgivecdate);
+
+        contactbool = false;
 
 //        final String[] AndroidDesk= helpher.getAllLabels();
         List<String> lables = helpher.getAllLabels();
@@ -158,10 +164,12 @@ public class GivemoneyActivity extends FragmentActivity {
                 String Cdate=textViewcdate.getText().toString();
                 String Duedate=textViewduedate.getText().toString();
                 String Type="GIVEN";
+                String Image = image;
+                b = (byte) Integer.parseInt(Image);
 
                 if(Username.length() != 0 && Amount !=0)
                 {
-                    InsertData(Username,Amount,Description,Cdate,Duedate,Type);
+                    InsertData(Username,Amount,Description,Cdate,Duedate,Type,b);
 
                     edittextname.setText("");
                     editTextamount.setText("");
@@ -270,6 +278,7 @@ public class GivemoneyActivity extends FragmentActivity {
                 cursor.moveToFirst();
 
                 String name = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
+                image = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Photo.DISPLAY_NAME));
 
                 edittextname.setText(name);
                 //name.setText(number);
@@ -279,8 +288,8 @@ public class GivemoneyActivity extends FragmentActivity {
     }
 
 
-    private void InsertData(String name, int amount, String description,String cdate,String duedate,String type) {
-        boolean isInserted = helpher.GiveTakeData(name, amount, description,cdate,duedate,type);
+    private void InsertData(String name, int amount, String description,String cdate,String duedate,String type,byte image) {
+        boolean isInserted = helpher.GiveTakeData(name, amount, description,cdate,duedate,type,image);
 
         Cursor cursor = helpher.fillname(name);
         if (cursor.getCount() > 0)
@@ -289,7 +298,14 @@ public class GivemoneyActivity extends FragmentActivity {
         }
         else
         {
-            helpher.AddUserName(name);
+            if(contactbool == true)
+            {
+            }
+            else {
+                helpher.AddUserName(name);
+            }
+
+            contactbool = false;
         }
 
 

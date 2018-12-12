@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Environment;
 import android.widget.Toast;
 
 import com.example.mentor.debitmaneger.Model.Planet;
@@ -22,6 +23,7 @@ import java.util.List;
 public class DatabaseHelpher extends SQLiteOpenHelper {
 
 public static final String DATABSE_NAME= "DebitManeger.db";
+public static final String DBLOCATIONBACKUP = Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+ "Backup";
 
 
     //private final String MY_QUERY = "SELECT Amount,Amount1 FROM GIVEMONEY a INNER JOIN TAKEMONEY b ON a.Id=b.Id WHERE a.Nameg=?";
@@ -35,6 +37,7 @@ public static final String DATABSE_NAME= "DebitManeger.db";
     public static final String COL4_GIVETAKE="CDate";
     public static final String COL5_GIVETAKE="DueDate";
     public static final String COL6_GIVETAKE="Type";
+    public static final String COL7_GIVETAKE="Image";
 
     //Userreport Table
     public static final String TABLE_UserReport="USERREPORT";
@@ -49,6 +52,8 @@ public static final String DATABSE_NAME= "DebitManeger.db";
     public static final String COL0_Add_User_Name="User_Id";
     public static final String COL1_Add_User_Name="User_Name";
 
+
+
     private Context mContext;
 
     public DatabaseHelpher(Context context) {
@@ -57,7 +62,7 @@ public static final String DATABSE_NAME= "DebitManeger.db";
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-    db.execSQL("create table " +TABLE_GIVETAKE+ "(Id Integer  primary key autoincrement, Name Text ,Amount int, Description Text,CDate Text,DueDate Text,Type Text)");
+    db.execSQL("create table " +TABLE_GIVETAKE+ "(Id Integer  primary key autoincrement, Name Text ,Amount int, Description Text,CDate Text,DueDate Text,Type Text,Image blob)");
     db.execSQL(" create table " +TABLE_UserReport+ "(User_Id Integer primary key autoincrement, User_Name Text, User_GiveAmount Text, User_TakeAmount Text,User_Balance Text)");
     db.execSQL(" create table " +TABLE_Add_User_Name+ "(User_Id Integer primary key autoincrement, User_Name Text)");
     }
@@ -78,7 +83,7 @@ public static final String DATABSE_NAME= "DebitManeger.db";
 
     //GivemoneyActivity Activity
 
-public Boolean GiveTakeData(String name,int amount,String des,String cdate,String duedate,String type)
+public Boolean GiveTakeData(String name,int amount,String des,String cdate,String duedate,String type,byte image)
 {
     SQLiteDatabase db= getWritableDatabase();
     ContentValues contentValues=new ContentValues();
@@ -89,6 +94,7 @@ public Boolean GiveTakeData(String name,int amount,String des,String cdate,Strin
     contentValues.put(COL4_GIVETAKE,cdate);
     contentValues.put(COL5_GIVETAKE,duedate);
     contentValues.put(COL6_GIVETAKE,type);
+    contentValues.put(COL6_GIVETAKE,image);
 
     long result = db.insert(TABLE_GIVETAKE, null, contentValues);
 
@@ -249,7 +255,7 @@ public Boolean GiveTakeData(String name,int amount,String des,String cdate,Strin
         Cursor cursor = db.rawQuery("select Id,Name,Amount,Description,CDate,DueDate,Type from GIVETAKE Where Type = ?", new String[]{type});
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
-            planet = new Planettake(cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getString(3),cursor.getString(4),cursor.getString(5),cursor.getString(6));
+            planet = new Planettake(cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getString(3),cursor.getString(4),cursor.getString(5),cursor.getString(6),cursor.getInt(7));
             mPlanetlis.add(planet);
             cursor.moveToNext();
         }

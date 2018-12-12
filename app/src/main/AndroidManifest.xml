@@ -28,11 +28,13 @@
         <activity android:name=".ListTakeActivity" />
         <activity android:name=".ReportDetailsActivity" />
         <activity android:name=".ReportActivity" />
-        <activity android:name=".EditDeleteActivity"></activity>
+        <activity android:name=".EditDeleteActivity" />
 
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
+
+        <activity android:name=".BackupActivity"></activity>
     </application>
 
 </manifest>

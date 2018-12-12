@@ -9,8 +9,9 @@ public class Planettake {
     private String Tdate;
     private String TDuedate;
     private String Taketype;
+    private int TakeImage;
 
-    public Planettake(int id,String name1,String amount1,String description1,String tdate,String tduedate,String taketype)
+    public Planettake(int id,String name1,String amount1,String description1,String tdate,String tduedate,String taketype,int takeImage)
     {
         this.Id = id;
         this.Name1 = name1;
@@ -19,6 +20,7 @@ public class Planettake {
         this.Tdate = tdate;
         this.TDuedate = tduedate;
         this.Taketype = taketype;
+        this.TakeImage = takeImage;
     }
 
     public int getId() {
@@ -75,6 +77,14 @@ public class Planettake {
 
     public void setTaketype(String taketype) {
         Taketype = taketype;
+    }
+
+    public int getTakeImage() {
+        return TakeImage;
+    }
+
+    public void setTakeImage(int takeImage) {
+        TakeImage = takeImage;
     }
 }
 

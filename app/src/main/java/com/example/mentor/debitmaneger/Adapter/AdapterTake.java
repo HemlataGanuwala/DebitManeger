@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.mentor.debitmaneger.Model.Planettake;
@@ -52,10 +53,11 @@ public class AdapterTake extends ArrayAdapter<Planettake> implements Filterable 
         View v = View.inflate(mcontext, R.layout.takelist, null);
         TextView txttname = (TextView) v.findViewById(R.id.tvtname);
         TextView txttamount = (TextView) v.findViewById(R.id.tvtamt);
-
+        ImageView imgcontact = (ImageView) v.findViewById(R.id.imgtakecontact);
 
         txttname.setText(Planetlist.get(position).getName1());
         txttamount.setText(Planetlist.get(position).getAmount1());
+        imgcontact.setImageResource(Planetlist.get(position).getTakeImage());
 
 
         return v;

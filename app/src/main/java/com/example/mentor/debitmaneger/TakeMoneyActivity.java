@@ -4,10 +4,13 @@ import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.content.ContentUris;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
@@ -18,6 +21,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -26,7 +30,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Calendar;
+import java.util.List;
 
 public class TakeMoneyActivity extends AppCompatActivity {
 
@@ -44,6 +51,12 @@ public class TakeMoneyActivity extends AppCompatActivity {
     private DatePickerDialog.OnDateSetListener dateSetListener;
     private DatePickerDialog.OnDateSetListener dateSetListenerdue;
     AutoCompleteTextView editTextname;
+    String image;
+    byte b;
+    private Uri uriContact;
+    private String contactID;
+
+    boolean contactbool = false;
 
     //contact list
     //private static final int RESULT_PICK_CONTACT = 1;
@@ -64,8 +77,16 @@ public class TakeMoneyActivity extends AppCompatActivity {
         textViewcdate = (TextView) findViewById(R.id.tvcdatetake);
         textViewduedate = (TextView) findViewById(R.id.tvduedatetake);
 
+        contactbool = false;
+
         imageView =(ImageView)findViewById(R.id.imageView);
         imageViewtakecont = (ImageView)findViewById(R.id.imgtakecontact);
+
+        List<String> lables = helpher.getAllLabels();
+        ArrayAdapter<String> My_arr_adapter= new ArrayAdapter<String>(getApplicationContext(),android.R.layout.simple_dropdown_item_1line,lables);
+//        editTextname = (AutoCompleteTextView) findViewById(R.id.etname);
+        editTextname.setThreshold(2);
+        editTextname.setAdapter(My_arr_adapter);
 //        Display();
 
         imageViewtakecont.setOnClickListener(new View.OnClickListener() {
@@ -143,9 +164,11 @@ public class TakeMoneyActivity extends AppCompatActivity {
                 String Cdate = textViewcdate.getText().toString();
                 String DueDate = textViewduedate.getText().toString();
                 String Type = "TAKEN";
+//                String Image = image;
+//                b = (byte) Integer.parseInt(Image);
 
                 if (Name.length() !=0 && Amount != 0) {
-                    InsertData(Name,Amount, Description,Cdate,DueDate,Type);
+                    InsertData(Name,Amount, Description,Cdate,DueDate,Type,b);
 
                     editTextname.setText("");
                     editTextamount.setText("");
@@ -254,17 +277,44 @@ public class TakeMoneyActivity extends AppCompatActivity {
                 cursor.moveToFirst();
 
                 String name = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
+                image = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Photo.PHOTO_URI));
+
+                contactbool = true;
 
                 editTextname.setText(name);
+//                retrieveContactPhoto();
                 //name.setText(number);
                 //contactEmail.setText(email);
             }
         }
     }
 
-    private void InsertData (String name, int amount, String description,String cdate,String duedate,String type)
+    private void retrieveContactPhoto() {
+
+        Bitmap photo = null;
+
+        try {
+            InputStream inputStream = ContactsContract.Contacts.openContactPhotoInputStream(getContentResolver(),
+                    ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, new Long(contactID)));
+
+            if (inputStream != null) {
+                photo = BitmapFactory.decodeStream(inputStream);
+                ImageView imageView = (ImageView) findViewById(R.id.takeimg);
+                imageView.setImageBitmap(photo);
+            }
+
+            assert inputStream != null;
+            inputStream.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void InsertData (String name, int amount, String description,String cdate,String duedate,String type,byte image)
     {
-        boolean isInserted = helpher.GiveTakeData(name,amount,description, cdate, duedate,type);
+        boolean isInserted = helpher.GiveTakeData(name,amount,description, cdate, duedate,type,image);
 
         Cursor cursor = helpher.fillname(name);
         if (cursor.getCount() > 0)
@@ -273,7 +323,14 @@ public class TakeMoneyActivity extends AppCompatActivity {
         }
         else
         {
-            helpher.AddUserName(name);
+            if(contactbool == true)
+            {
+            }
+            else {
+                helpher.AddUserName(name);
+            }
+
+            contactbool = false;
         }
 
         if (isInserted == true) {
