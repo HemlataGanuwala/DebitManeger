@@ -20,14 +20,19 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 
 public class GivemoneyActivity extends FragmentActivity {
@@ -36,7 +41,8 @@ public class GivemoneyActivity extends FragmentActivity {
     private static final int RQS_PICK_CONTACT = 1;
     //private static final int PICK_CONTACT = 1;
     private static final int PERMISSION_REQUEST_CONTACT = 1;
-    EditText editTextname,editTextamount,editTextdescription;
+    EditText editTextamount,editTextdescription;
+    AutoCompleteTextView edittextname;
 
     ImageView imageView,img,imageViewcontact;
     Button buttoncdate,buttonduedate,btnsubmit;
@@ -46,7 +52,6 @@ public class GivemoneyActivity extends FragmentActivity {
     private DatePickerDialog.OnDateSetListener dateSetListener;
     private DatePickerDialog.OnDateSetListener dateSetListenerdue;
     int year,month,day,yeardue,monthdue,daydue;
-
 
 
     @Override
@@ -60,14 +65,21 @@ public class GivemoneyActivity extends FragmentActivity {
         buttonduedate = (Button) findViewById(R.id.btnduedate);
         btnsubmit = (Button) findViewById(R.id.btnsub);
 
-        textViewduedate = (TextView) findViewById(R.id.tvduedate);
+        textViewduedate = (TextView) findViewById(R.id.tvgiveduedate);
         imageView = (ImageView)findViewById(R.id.image);
         img =(ImageView)findViewById(R.id.imgstatus);
-        editTextname = (EditText) findViewById(R.id.edtname);
-        editTextamount = (EditText) findViewById(R.id.edtamount);
-        editTextdescription = (EditText) findViewById(R.id.edtdes);
+        edittextname = (AutoCompleteTextView) findViewById(R.id.etname);
+        editTextamount = (EditText) findViewById(R.id.etgiveamount);
+        editTextdescription = (EditText) findViewById(R.id.etgivedes);
         imageViewcontact = (ImageView)findViewById(R.id.imgcontact);
-        textViewcdate = (TextView)findViewById(R.id.tvcdate);
+        textViewcdate = (TextView)findViewById(R.id.tvgivecdate);
+
+//        final String[] AndroidDesk= helpher.getAllLabels();
+        List<String> lables = helpher.getAllLabels();
+        ArrayAdapter<String> My_arr_adapter= new ArrayAdapter<String>(getApplicationContext(),android.R.layout.simple_dropdown_item_1line,lables);
+        edittextname = (AutoCompleteTextView) findViewById(R.id.etname);
+        edittextname.setThreshold(2);
+        edittextname.setAdapter(My_arr_adapter);
 //        Display();
 
         imageViewcontact.setOnClickListener(new View.OnClickListener() {
@@ -140,7 +152,7 @@ public class GivemoneyActivity extends FragmentActivity {
         btnsubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String Username=editTextname.getText().toString();
+                String Username=edittextname.getText().toString();
                 int Amount=Integer.parseInt(editTextamount.getText().toString());
                 String Description=editTextdescription.getText().toString();
                 String Cdate=textViewcdate.getText().toString();
@@ -151,7 +163,7 @@ public class GivemoneyActivity extends FragmentActivity {
                 {
                     InsertData(Username,Amount,Description,Cdate,Duedate,Type);
 
-                    editTextname.setText("");
+                    edittextname.setText("");
                     editTextamount.setText("");
                     editTextdescription.setText("");
                     textViewcdate.setText("");
@@ -259,7 +271,7 @@ public class GivemoneyActivity extends FragmentActivity {
 
                 String name = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
 
-                editTextname.setText(name);
+                edittextname.setText(name);
                 //name.setText(number);
                 //contactEmail.setText(email);
             }
@@ -269,6 +281,17 @@ public class GivemoneyActivity extends FragmentActivity {
 
     private void InsertData(String name, int amount, String description,String cdate,String duedate,String type) {
         boolean isInserted = helpher.GiveTakeData(name, amount, description,cdate,duedate,type);
+
+        Cursor cursor = helpher.fillname(name);
+        if (cursor.getCount() > 0)
+        {
+            Toast.makeText(GivemoneyActivity.this, "User Already Exist", Toast.LENGTH_LONG).show();
+        }
+        else
+        {
+            helpher.AddUserName(name);
+        }
+
 
         if (isInserted == true) {
             Toast.makeText(GivemoneyActivity.this, "Submit Successfully", Toast.LENGTH_LONG).show();
@@ -280,15 +303,15 @@ public class GivemoneyActivity extends FragmentActivity {
 
     }
 
-    public void Display()
-    {
-        Intent intent = getIntent();
-        Bundle bg1 = intent.getExtras();
-        if(bg1!=null) {
-            String contactname = (String) bg1.get("a1");
-            editTextname.setText(contactname);
-        }
-    }
+//    public void Display()
+//    {
+//        Intent intent = getIntent();
+//        Bundle bg1 = intent.getExtras();
+//        if(bg1!=null) {
+//            String contactname = (String) bg1.get("a1");
+//            editTextname.setText(contactname);
+//        }
+//    }
 }
 
 

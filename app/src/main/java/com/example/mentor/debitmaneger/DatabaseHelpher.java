@@ -115,6 +115,37 @@ public Boolean GiveTakeData(String name,int amount,String des,String cdate,Strin
         }
     }
 
+    public Cursor fillname(String name)
+    {
+        SQLiteDatabase db = getWritableDatabase();
+        Cursor cursor = db.rawQuery("select * from ADDUSERNAME where User_Name = ?",new String[]{name});
+        return cursor;
+    }
+
+    public List<String> getAllLabels(){
+        List<String> labels = new ArrayList<String>();
+
+        // Select All Query
+        String selectQuery = "SELECT  * FROM " + TABLE_Add_User_Name;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                labels.add(cursor.getString(1));
+            } while (cursor.moveToNext());
+        }
+
+        // closing connection
+        cursor.close();
+        db.close();
+
+        // returning lables
+        return labels;
+    }
+
     public Integer DeleteData(String id)
     {
         SQLiteDatabase db= getWritableDatabase();

@@ -18,6 +18,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -32,7 +33,7 @@ public class TakeMoneyActivity extends AppCompatActivity {
     private static final int RQS_PICK_CONTACT = 1;
     private static final int PERMISSION_REQUEST_CONTACT = 1;
     DatabaseHelpher helpher;
-    EditText editTextname, editTextamount, editTextdescription;
+    EditText  editTextamount, editTextdescription;
     TextView textViewcdate,textViewduedate;
     private DatePicker datePicker;
     private Calendar calendar;
@@ -42,6 +43,7 @@ public class TakeMoneyActivity extends AppCompatActivity {
     ImageView imageView,imageViewtakecont;
     private DatePickerDialog.OnDateSetListener dateSetListener;
     private DatePickerDialog.OnDateSetListener dateSetListenerdue;
+    AutoCompleteTextView editTextname;
 
     //contact list
     //private static final int RESULT_PICK_CONTACT = 1;
@@ -56,7 +58,7 @@ public class TakeMoneyActivity extends AppCompatActivity {
         buttoncdate = (Button) findViewById(R.id.btnsetdatetake);
         buttonduedate = (Button) findViewById(R.id.btnsetduedatetake);
         btnsubmit1 = (Button) findViewById(R.id.btnsub1);
-        editTextname = (EditText) findViewById(R.id.edtname);
+        editTextname = (AutoCompleteTextView) findViewById(R.id.ettakename);
         editTextamount = (EditText) findViewById(R.id.edtamount);
         editTextdescription = (EditText) findViewById(R.id.edtdes);
         textViewcdate = (TextView) findViewById(R.id.tvcdatetake);
@@ -263,6 +265,17 @@ public class TakeMoneyActivity extends AppCompatActivity {
     private void InsertData (String name, int amount, String description,String cdate,String duedate,String type)
     {
         boolean isInserted = helpher.GiveTakeData(name,amount,description, cdate, duedate,type);
+
+        Cursor cursor = helpher.fillname(name);
+        if (cursor.getCount() > 0)
+        {
+            Toast.makeText(TakeMoneyActivity.this, "User Already Exist", Toast.LENGTH_LONG).show();
+        }
+        else
+        {
+            helpher.AddUserName(name);
+        }
+
         if (isInserted == true) {
 
             Toast.makeText(TakeMoneyActivity.this, "Submit Successfully", Toast.LENGTH_LONG).show();
