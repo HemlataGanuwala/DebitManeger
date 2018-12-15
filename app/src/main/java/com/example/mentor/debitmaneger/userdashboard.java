@@ -5,35 +5,24 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class userdashboard extends AppCompatActivity {
 
-    Button btnreport,btngive,btntake,buttonbackup,buttonimport;
+    Button btnreport,btngive,btntake;
     TextView txtmoney,textViewtotgive,textViewtottake;
     DatabaseHelpher helpher;
     int totaltake,totalgive,totaldata;
-
-    public static final int REQUEST_CODE_SIGN_IN = 1;
-    public static final int REQUEST_CODE_OPENING = 1;
-    public static final int REQUEST_CODE_CREATION = 2;
-    public static final int REQUEST_CODE_PERMISSIONS = 2;
-
-    private boolean isBackup = true;
-
-    private userdashboard activity;
-
-    private RemoteBackup remoteBackup;
-//    private LocalBackup localBackup;
+    ImageView imageViewsetting;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        activity = this;
         setContentView(R.layout.activity_userdashboard);
-        helpher = new DatabaseHelpher(this);
 
-        remoteBackup = new RemoteBackup(this);
+        helpher = new DatabaseHelpher(this);
 
         txtmoney = (TextView)findViewById(R.id.txtmoney);
         textViewtotgive = (TextView)findViewById(R.id.tvtotalgive);
@@ -41,22 +30,13 @@ public class userdashboard extends AppCompatActivity {
         btnreport=(Button)findViewById(R.id.btnre);
         btngive=(Button)findViewById(R.id.btngive);
         btntake=(Button)findViewById(R.id.btntake);
-        buttonbackup=(Button)findViewById(R.id.btnbackup);
-        buttonimport=(Button)findViewById(R.id.btnimport);
+        imageViewsetting=(ImageView)findViewById(R.id.imgbackup);
 
-        buttonimport.setOnClickListener(new View.OnClickListener() {
+        imageViewsetting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                isBackup = false;
-                remoteBackup.connectToDrive(isBackup);
-            }
-        });
-
-        buttonbackup.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                isBackup = true;
-                remoteBackup.connectToDrive(isBackup);
+                Intent intent = new Intent(userdashboard.this,BackupActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -91,7 +71,6 @@ public class userdashboard extends AppCompatActivity {
         getsumdata();
         getsumdatagive();
         getsumdatatotal();
-        helpher.closeDB();
     }
 
     public void getsumdata()

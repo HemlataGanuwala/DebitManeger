@@ -24,6 +24,7 @@ public class DatabaseHelpher extends SQLiteOpenHelper {
 
 public static final String DATABSE_NAME= "DebitManeger.db";
 public static final String DBLOCATIONBACKUP = Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+ "Backup";
+public static final String DBLOCATION = Environment.getExternalStorageDirectory().getAbsolutePath();
 
 
     //private final String MY_QUERY = "SELECT Amount,Amount1 FROM GIVEMONEY a INNER JOIN TAKEMONEY b ON a.Id=b.Id WHERE a.Nameg=?";
@@ -53,9 +54,6 @@ public static final String DBLOCATIONBACKUP = Environment.getExternalStorageDire
     public static final String COL1_Add_User_Name="User_Name";
 
 
-
-    private Context mContext;
-
     public DatabaseHelpher(Context context) {
         super(context, DATABSE_NAME, null, 1);
     }
@@ -73,19 +71,12 @@ public static final String DBLOCATIONBACKUP = Environment.getExternalStorageDire
         db.execSQL(" DROP TABLE " +TABLE_UserReport);
         db.execSQL(" DROP TABLE " +TABLE_Add_User_Name);
     }
-//    public Cursor GetListLogin() {
-//
-//        SQLiteDatabase db = getWritableDatabase();
-//        Cursor result = db.rawQuery("select * from " + TABLE_GIVE, null);
-//        return result;
-//
-//    }
 
-    //GivemoneyActivity Activity
 
 public Boolean GiveTakeData(String name,int amount,String des,String cdate,String duedate,String type,byte image)
 {
     SQLiteDatabase db= getWritableDatabase();
+
     ContentValues contentValues=new ContentValues();
 
     contentValues.put(COL1_GIVETAKE,name);
@@ -126,6 +117,7 @@ public Boolean GiveTakeData(String name,int amount,String des,String cdate,Strin
         SQLiteDatabase db = getWritableDatabase();
         Cursor cursor = db.rawQuery("select * from ADDUSERNAME where User_Name = ?",new String[]{name});
         return cursor;
+
     }
 
     public List<String> getAllLabels(){
@@ -148,6 +140,7 @@ public Boolean GiveTakeData(String name,int amount,String des,String cdate,Strin
         cursor.close();
         db.close();
 
+
         // returning lables
         return labels;
     }
@@ -155,7 +148,9 @@ public Boolean GiveTakeData(String name,int amount,String des,String cdate,Strin
     public Integer DeleteData(String id)
     {
         SQLiteDatabase db= getWritableDatabase();
+
         db.delete(TABLE_GIVETAKE,"Id = ?",new String[]{id});
+
         return 0;
     }
 
@@ -163,6 +158,7 @@ public Boolean GiveTakeData(String name,int amount,String des,String cdate,Strin
     public Boolean UpdateGiveTakeData(String id, String name, String amount, String des, String cdate, String duedate, String type)
     {
         SQLiteDatabase db= getWritableDatabase();
+
         ContentValues contentValues=new ContentValues();
         contentValues.put(COL0_GIVETAKE,id);
         contentValues.put(COL1_GIVETAKE,name);
@@ -173,16 +169,19 @@ public Boolean GiveTakeData(String name,int amount,String des,String cdate,Strin
         contentValues.put(COL6_GIVETAKE,type);
 
         db.update(TABLE_GIVETAKE, contentValues, "Id = ?", new String[]{id});
+
        return true;
     }
 
     public Planet getProductById(int id) {
          SQLiteDatabase db = this.getWritableDatabase();
+
         Planet planet = null;
         Cursor cursor = db.rawQuery("select Id,Name,Amount,Description,CDate,DueDate,Type from GIVETAKE Where Id = ?", new String[]{String.valueOf(id)});
         cursor.moveToFirst();
         planet = new Planet(cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5), cursor.getString(6));
         cursor.close();
+
         return planet;
     }
 
@@ -190,6 +189,7 @@ public Boolean GiveTakeData(String name,int amount,String des,String cdate,Strin
     public Boolean UserReportData(String name,int giveamount, int takeamt, int balance)
     {
         SQLiteDatabase db= getWritableDatabase();
+
         ContentValues contentValues=new ContentValues();
 
         contentValues.put(COL1_UserReport,name);
@@ -207,32 +207,12 @@ public Boolean GiveTakeData(String name,int amount,String des,String cdate,Strin
         }
     }
 
-//    public Boolean saveData(String combinename,int giveamount,String givedesg,int takeamount,String takedest,String dategive,String datetake)
-//    {
-//        SQLiteDatabase db= getWritableDatabase();
-//        ContentValues contentValues=new ContentValues();
-//
-//        contentValues.put(COL1_GT,combinename);
-//        contentValues.put(COL2_GT,giveamount);
-//        contentValues.put(COL3_GT,givedesg);
-//        contentValues.put(COL4_GT,takeamount);
-//        contentValues.put(COL5_GT,takedest);
-//        contentValues.put(COL6_GT,dategive);
-//        contentValues.put(COL7_GT,datetake);
-//
-//        long result = db.insert(TABLE_GT, null, contentValues);
-//
-//        if (result == -1) {
-//            return false;
-//        } else {
-//            return true;
-//        }
-//    }
 
 //Planet List GiveMoney
 
     public List<Planet> getListgive(String type) {
         SQLiteDatabase db = getWritableDatabase();
+
         Planet planet = null;
         List<Planet>  mPlanetlis = new ArrayList<>();
         Cursor cursor = db.rawQuery("select Id,Name,Amount,Description,CDate,DueDate,Type from GIVETAKE Where Type = ?", new String[]{type});
@@ -244,12 +224,14 @@ public Boolean GiveTakeData(String name,int amount,String des,String cdate,Strin
         }
 
         cursor.close();
+
         return  mPlanetlis;
 
     }
 
     public List<Planettake> getListtake(String type) {
         SQLiteDatabase db = getWritableDatabase();
+
         Planettake planet = null;
         List<Planettake>  mPlanetlis = new ArrayList<>();
         Cursor cursor = db.rawQuery("select Id,Name,Amount,Description,CDate,DueDate,Type from GIVETAKE Where Type = ?", new String[]{type});
@@ -261,6 +243,7 @@ public Boolean GiveTakeData(String name,int amount,String des,String cdate,Strin
         }
 
         cursor.close();
+
         return  mPlanetlis;
 
     }
@@ -314,6 +297,7 @@ public Boolean GiveTakeData(String name,int amount,String des,String cdate,Strin
     public int sumData(String typegive)
     {
         SQLiteDatabase db = getWritableDatabase();
+
         Cursor c = db.rawQuery("select sum(Amount) from GIVETAKE Where Type = ?", new String[]{typegive});
         if(c.moveToFirst())
             amount = c.getInt(0);
@@ -328,6 +312,7 @@ public Boolean GiveTakeData(String name,int amount,String des,String cdate,Strin
     public int sumDatagive(String typetake)
     {
         SQLiteDatabase db = getWritableDatabase();
+
         Cursor c = db.rawQuery("select sum(Amount) from GIVETAKE Where Type = ?", new String[]{typetake});
         if(c.moveToFirst())
             amount1 = c.getInt(0);
@@ -342,6 +327,7 @@ public Boolean GiveTakeData(String name,int amount,String des,String cdate,Strin
     public int UsersumDataTake(String takename,String type)
     {
         SQLiteDatabase db = getWritableDatabase();
+
         Cursor c = db.rawQuery("select sum(Amount) from GIVETAKE Where Name = ? And Type = ?", new String[]{takename,type});
         if(c.moveToFirst())
             takenamt = c.getInt(0);
@@ -356,6 +342,7 @@ public Boolean GiveTakeData(String name,int amount,String des,String cdate,Strin
     public int UsersumDataGive(String givename,String type)
     {
         SQLiteDatabase db = getWritableDatabase();
+
         Cursor c = db.rawQuery("select sum(Amount) from GIVETAKE Where Name = ? And Type = ?", new String[]{givename,type});
         if(c.moveToFirst())
             givenamt = c.getInt(0);
@@ -369,6 +356,7 @@ public Boolean GiveTakeData(String name,int amount,String des,String cdate,Strin
     public Cursor filllist()
     {
         SQLiteDatabase db = getWritableDatabase();
+
         Cursor cursor = db.rawQuery("select distinct Name from " + TABLE_GIVETAKE, null);
         return cursor;
     }
@@ -376,6 +364,7 @@ public Boolean GiveTakeData(String name,int amount,String des,String cdate,Strin
     public Cursor filllistname()
     {
         SQLiteDatabase db = getWritableDatabase();
+
         Cursor cursor = db.rawQuery("select Name from " + TABLE_GIVETAKE, null);
         return cursor;
     }
@@ -383,83 +372,11 @@ public Boolean GiveTakeData(String name,int amount,String des,String cdate,Strin
     public void DeleteData()
     {
         SQLiteDatabase db = getWritableDatabase();
+
         db.delete(TABLE_UserReport, null,null);
     }
 
-    //close database
-    public void closeDB() {
 
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        if (db != null && db.isOpen())
-            db.close();
-    }
-
-
-    public void backup(String outFileName) {
-
-        //database path
-        final String inFileName = mContext.getDatabasePath(DATABSE_NAME).toString();
-
-        try {
-
-            File dbFile = new File(inFileName);
-            FileInputStream fis = new FileInputStream(dbFile);
-
-            // Open the empty db as the output stream
-            OutputStream output = new FileOutputStream(outFileName);
-
-            // Transfer bytes from the input file to the output file
-            byte[] buffer = new byte[1024];
-            int length;
-            while ((length = fis.read(buffer)) > 0) {
-                output.write(buffer, 0, length);
-            }
-
-            // Close the streams
-            output.flush();
-            output.close();
-            fis.close();
-
-            Toast.makeText(mContext, "Backup Completed", Toast.LENGTH_SHORT).show();
-
-        } catch (Exception e) {
-            Toast.makeText(mContext, "Unable to backup database. Retry", Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-        }
-    }
-
-    public void importDB(String inFileName) {
-
-        final String outFileName = mContext.getDatabasePath(DATABSE_NAME).toString();
-
-        try {
-
-            File dbFile = new File(inFileName);
-            FileInputStream fis = new FileInputStream(dbFile);
-
-            // Open the empty db as the output stream
-            OutputStream output = new FileOutputStream(outFileName);
-
-            // Transfer bytes from the input file to the output file
-            byte[] buffer = new byte[1024];
-            int length;
-            while ((length = fis.read(buffer)) > 0) {
-                output.write(buffer, 0, length);
-            }
-
-            // Close the streams
-            output.flush();
-            output.close();
-            fis.close();
-
-            Toast.makeText(mContext, "Import Completed", Toast.LENGTH_SHORT).show();
-
-        } catch (Exception e) {
-            Toast.makeText(mContext, "Unable to import database. Retry", Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-        }
-    }
 
 
 }
